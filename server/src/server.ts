@@ -3,6 +3,7 @@ dotenv.config();
 
 import express, { Request, Response, NextFunction} from 'express';
 import session from 'express-session';
+// @ts-ignore
 import pgSession from 'express-pg-session';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -10,9 +11,9 @@ import path from 'path';
 import pool from './config/database';
 
 
-import authRoutes from './routes/authRoutes';
-import videoRoutes from './routes/videoRoutes';
-import tagRoutes from './routes/tagRoutes';
+import authRoutes from '../src/routes/authRoutes';
+import videoRoutes from '../src/routes/videoRoutes';
+import tagRoutes from '../src/routes/tagRoutes';
 
 
 const app = express();
