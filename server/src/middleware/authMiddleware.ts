@@ -15,4 +15,5 @@ export function redirectIfAuthenticated(req: Request,res: Response, next: NextFu
         res.status(400).json({ error: 'Already logged in'});
         return;
     }
+    next();
 }
