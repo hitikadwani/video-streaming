@@ -6,8 +6,8 @@ const router = express.Router();
 
 router.get('/', requireAuth, videoController.getAllVideos);
 router.get('/search', requireAuth, videoController.searchVideos);
-router.get(':id', requireAuth, videoController.getVideoById);
+router.get('/:id', requireAuth, videoController.getVideoById);
 
-router.get('/stream/:id', videoController.streamVideo);
+router.get('/stream/:id', requireAuth, videoController.streamVideo);
 
 export default router;  

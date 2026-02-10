@@ -3,7 +3,6 @@ import bcrypt from 'bcrypt';
 import { userQueries } from '../db/queries';
 import { googleOAuth, githubOAuth } from '../utils/oauth';
 import { User } from '../types';
-import { REPLCommand } from 'node:repl';
 
 export async function register(req: Request, res: Response): Promise<void> {
     try {
@@ -63,6 +62,7 @@ export async function login(req: Request, res: Response): Promise<void> {
         const validPassword = await bcrypt.compare(password, user.password_hash);
         if(!validPassword) {
             res.status(401).json({error: 'Invalid credentials'});
+            return;
         }
 
         req.session.userId = user.id;

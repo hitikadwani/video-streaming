@@ -11,15 +11,15 @@ import path from 'path';
 import pool from './config/database';
 
 
-import authRoutes from '../src/routes/authRoutes';
-import videoRoutes from '../src/routes/videoRoutes';
-import tagRoutes from '../src/routes/tagRoutes';
+import authRoutes from './routes/authRoutes';
+import videoRoutes from './routes/videoRoutes';
+import tagRoutes from './routes/tagRoutes';
 
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const PgSession = new pgSession(session);
+const PgSession = pgSession(session);
 
 app.use(cors({
     origin: process.env.CLIENT_URL,
@@ -35,7 +35,7 @@ app.use(session({
         pool: pool,
         tableName: 'session'
     }),
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -65,5 +65,5 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 
 app.listen(PORT, () =>{  
-  console.log('Server is running on port ${PORT}')
+  console.log(`Server is running on port ${PORT}`)
 });

@@ -79,7 +79,7 @@ export async function streamVideo(req: Request, res: Response): Promise<void> {
             return;
         }
 
-        const manifestPath = path.join(__dirname, '../../public', video.manifest_url);
+        const manifestPath = path.join(__dirname, '../../../public', video.manifest_url);
 
         if(!fs.existsSync(manifestPath)) {
             res.status(404).json({error: 'Video manifest not found'});
