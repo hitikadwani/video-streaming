@@ -1,0 +1,52 @@
+{
+  "name": "video-streaming-platform",
+  "version": "1.0.0",
+  "description": "Mini SaaS Video Streaming Platform with TypeScript",
+  "main": "server/dist/server/src/server.js",
+  "scripts": {
+    "dev": "nodemon --exec tsx server/src/server.ts",
+    "build": "tsc",
+    "start": "node server/dist/server/src/server.js",
+    "migrate": "tsx server/src/db/migrate.ts",
+    "fetch-videos": "tsx scripts/fetchVideosFromPexels.ts",
+    "convert-hls": "tsx scripts/convertToHLS.ts",
+    "seed-db": "tsx scripts/seedDatabase.ts",
+    "setup": "npm run migrate && npm run fetch-videos && npm run convert-hls && npm run seed-db"
+  },
+  "keywords": [
+    "video",
+    "streaming",
+    "hls",
+    "nodejs",
+    "typescript",
+    "express",
+    "postgresql"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.13.5",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.4",
+    "express": "^5.2.1",
+    "express-pg-session": "^1.1.0",
+    "express-session": "^1.19.0",
+    "express-validator": "^7.3.1",
+    "pg": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/express-session": "^1.18.2",
+    "@types/node": "^25.2.2",
+    "@types/pg": "^8.16.0",
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
