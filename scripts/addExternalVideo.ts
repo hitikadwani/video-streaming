@@ -46,7 +46,7 @@ async function addExternalVideos(): Promise<void> {
         manifest_url: v.manifest_url,
         duration: v.duration,
         external_provider: 'external',
-        external_id: null,
+        external_id: undefined,
         width: v.width ?? null,
         height: v.height ?? null,
       });

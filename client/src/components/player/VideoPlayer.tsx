@@ -23,7 +23,7 @@ function getStandardResolutionLabel(height: number): string {
   if (height <= 1080) return '1080p';
   if (height <= 1440) return '1440p';
   if (height <= 2160) return '4K';
-  return `${height}p`; // For very high resolutions, keep actual height
+  return `${height}p`;
 }
 
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({ manifestUrl, onError }) => {
