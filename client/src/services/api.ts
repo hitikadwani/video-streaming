@@ -1,6 +1,33 @@
 import axios from 'axios';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// Determine API base URL
+const getApiBaseUrl = (): string => {
+  // Use environment variable if set
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  
+  // In production without env var, show clear error
+  if (process.env.NODE_ENV === 'production') {
+    console.error(
+      '⚠️ CRITICAL: REACT_APP_API_URL environment variable is not set!\n' +
+      'Please set it in your Vercel project settings.\n' +
+      'The app will not work correctly without it.'
+    );
+    // Return empty string to make the error obvious
+    return '';
+  }
+  
+  // Development fallback
+  return 'http://localhost:5000';
+};
+
+const API_BASE = getApiBaseUrl();
+
+// Log for debugging
+console.log('🌐 API Base URL:', API_BASE);
+console.log('📦 Environment:', process.env.NODE_ENV);
+console.log('🔧 REACT_APP_API_URL:', process.env.REACT_APP_API_URL || 'NOT SET');
 
 export const api = axios.create({
   baseURL: API_BASE,
