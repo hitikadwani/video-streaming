@@ -39,8 +39,26 @@ export const SearchListingPage: React.FC = () => {
     );
   }, [qFromUrl, tagsFromUrl, dispatch]);
 
+   // Debounced search effect - automatically search as user types
+  useEffect(() => {
+    // Create a timeout to delay the search
+    const timeoutId = setTimeout(() => {
+     // Only update URL if query has changed
+      if (query !== qFromUrl || selectedTagIds.join(',') !== tagIdsFromUrl.join(',')) {
+      const nextParams = new URLSearchParams();
+      if (query.trim()) nextParams.set('q', query.trim());
+      if (selectedTagIds.length) nextParams.set('tags', selectedTagIds.join(','));
+      setSearchParams(nextParams);
+     }
+    }, 500); // 500ms delay (adjust as needed)
+
+    // Cleanup: cancel timeout if user types again before delay finishes
+       return () => clearTimeout(timeoutId);
+  }, [query, selectedTagIds]); // Run when query or selectedTagIds change
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Search is now automatic via debounce, but we can trigger immediately on Enter
     const next = new URLSearchParams();
     if (query.trim()) next.set('q', query.trim());
     if (selectedTagIds.length) next.set('tags', selectedTagIds.join(','));
