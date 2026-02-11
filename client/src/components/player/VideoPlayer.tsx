@@ -15,6 +15,17 @@ function formatTime(seconds: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
+function getStandardResolutionLabel(height: number): string {
+  if (height <= 240) return '240p';
+  if (height <= 360) return '360p';
+  if (height <= 480) return '480p';
+  if (height <= 720) return '720p';
+  if (height <= 1080) return '1080p';
+  if (height <= 1440) return '1440p';
+  if (height <= 2160) return '4K';
+  return `${height}p`; // For very high resolutions, keep actual height
+}
+
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({ manifestUrl, onError }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
@@ -31,7 +42,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ manifestUrl, onError }
   const [loading, setLoading] = useState(true);
   const [levelLabel, setLevelLabel] = useState<string>('AUTO');
   const [showQualityMenu, setShowQualityMenu] = useState(false);
-  const [availableLevels, setAvailableLevels] = useState<Array<{ index: number; height: number; bitrate: number }>>([]);
+  const [availableLevels, setAvailableLevels] = useState<Array<{ index: number; height: number; bitrate: number; label: string }>>([]);
   const [selectedLevel, setSelectedLevel] = useState<number>(-1); // -1 means AUTO
 
   // Build absolute URL if it's a relative path like "/videos/..."
@@ -72,12 +83,13 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ manifestUrl, onError }
         const lvl = hls.levels?.[data.level];
         if (!lvl) return;
       
-        const msg = `HLS LEVEL -> ${lvl.height}p (${Math.round((lvl.bitrate ?? 0) / 1000)} kbps) [index=${data.level}]`;
+        const standardLabel = getStandardResolutionLabel(lvl.height);
+        const msg = `HLS LEVEL -> ${standardLabel} (${Math.round((lvl.bitrate ?? 0) / 1000)} kbps) [index=${data.level}]`;
         console.log(msg);
         
         // Update label only if in AUTO mode
         if (selectedLevel === -1) {
-          setLevelLabel(`AUTO (${lvl.height}p)`);
+          setLevelLabel(`AUTO (${standardLabel})`);
         }
       });
       
@@ -96,24 +108,26 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ manifestUrl, onError }
         );
         console.log('autoLevelEnabled:', hls.autoLevelEnabled, 'currentLevel:', hls.currentLevel);
         
-        // Store available quality levels and deduplicate by height
-        // Keep the highest bitrate for each unique height
-        const levelsByHeight = new Map<number, { index: number; height: number; bitrate: number }>();
+        // Store available quality levels and deduplicate by STANDARD resolution label
+        // Keep the highest bitrate for each unique standard label
+        const levelsByLabel = new Map<string, { index: number; height: number; bitrate: number; label: string }>();
         
         hls.levels.forEach((l, i) => {
-          const existing = levelsByHeight.get(l.height);
+          const standardLabel = getStandardResolutionLabel(l.height);
+          const existing = levelsByLabel.get(standardLabel);
           const bitrate = l.bitrate || 0;
           
           if (!existing || bitrate > existing.bitrate) {
-            levelsByHeight.set(l.height, {
+            levelsByLabel.set(standardLabel, {
               index: i,
               height: l.height,
-              bitrate: bitrate
+              bitrate: bitrate,
+              label: standardLabel
             });
           }
         });
         
-        const uniqueLevels = Array.from(levelsByHeight.values());
+        const uniqueLevels = Array.from(levelsByLabel.values());
         setAvailableLevels(uniqueLevels);
         setLoading(false);
       });
@@ -279,7 +293,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ manifestUrl, onError }
   const selectQuality = (levelIndex: number) => {
     const hls = hlsRef.current;
     if (!hls) return;
-
+  
     if (levelIndex === -1) {
       // Auto mode
       hls.currentLevel = -1;
@@ -292,8 +306,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ manifestUrl, onError }
       setSelectedLevel(levelIndex);
       const level = hls.levels[levelIndex];
       if (level) {
-        setLevelLabel(`${level.height}p`);
-        console.log(`Quality manually set to ${level.height}p`);
+        const standardLabel = getStandardResolutionLabel(level.height);
+        setLevelLabel(standardLabel);
+        console.log(`Quality manually set to ${standardLabel}`);
       }
     }
     setShowQualityMenu(false);
@@ -442,7 +457,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ manifestUrl, onError }
                           selectQuality(level.index);
                         }}
                       >
-                        <span>{level.height}p</span>
+                          <span>{level.label}</span>
                         {selectedLevel === level.index && <span className="video-player__quality-check">✓</span>}
                       </button>
                     ))}
