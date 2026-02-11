@@ -130,6 +130,11 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ manifestUrl, onError }
         const uniqueLevels = Array.from(levelsByLabel.values());
         setAvailableLevels(uniqueLevels);
         setLoading(false);
+        // Autoplay: Start playing when video is ready
+        video.play().catch((error) => {
+        console.warn('Autoplay prevented by browser:', error);
+        // Autoplay was prevented, user will need to click play manually
+       });
       });
 
       hls.on(Hls.Events.ERROR, (_, data) => {
@@ -340,6 +345,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ manifestUrl, onError }
         className="video-player__video"
         onClick={togglePlay}
         playsInline
+        autoPlay
       />
 
       <div
