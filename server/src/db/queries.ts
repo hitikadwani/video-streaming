@@ -151,4 +151,3 @@ export const tagQueries = {
         return result.rows[0];
     }
 };
-

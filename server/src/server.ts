@@ -45,8 +45,9 @@ app.use(session({
     }
 }));
 
-app.use('/videos', express.static(path.join(__dirname, '../../public/videos')));
-app.use('/thumbnails', express.static(path.join(__dirname, '../../public/thumbnails')));
+const publicDir = path.join(process.cwd(), 'public');
+app.use('/videos', express.static(path.join(publicDir, 'videos')));
+app.use('/thumbnails', express.static(path.join(publicDir, 'thumbnails')));
 
 app.get('/api/health', (req: Request, res: Response) => {
     res.json({ status: 'ok', msg: 'Server is running' });
