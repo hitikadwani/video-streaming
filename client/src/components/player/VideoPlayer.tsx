@@ -87,8 +87,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ manifestUrl, onError }
         const msg = `HLS LEVEL -> ${standardLabel} (${Math.round((lvl.bitrate ?? 0) / 1000)} kbps) [index=${data.level}]`;
         console.log(msg);
         
-        // Update label only if in AUTO mode
-        if (selectedLevel === -1) {
+        // Update label only if in AUTO mode (check current level from hls instance)
+        if (hls.currentLevel === -1 || hls.autoLevelEnabled) {
           setLevelLabel(`AUTO (${standardLabel})`);
         }
       });

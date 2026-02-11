@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/slices/authSlice';
@@ -16,7 +16,9 @@ export const SearchListingPage: React.FC = () => {
 
   const qFromUrl = searchParams.get('q') ?? '';
   const tagsFromUrl = searchParams.get('tags');
-  const tagIdsFromUrl = tagsFromUrl ? tagsFromUrl.split(',').map((t) => parseInt(t, 10)).filter((n) => !Number.isNaN(n)) : [];
+  const tagIdsFromUrl = useMemo(() => {
+    return tagsFromUrl ? tagsFromUrl.split(',').map((t) => parseInt(t, 10)).filter((n) => !Number.isNaN(n)) : [];
+  }, [tagsFromUrl]);
 
   const [query, setQuery] = useState(qFromUrl);
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>(tagIdsFromUrl);
@@ -37,7 +39,7 @@ export const SearchListingPage: React.FC = () => {
         limit: 48,
       }) as any
     );
-  }, [qFromUrl, tagsFromUrl, dispatch]);
+  }, [qFromUrl, tagsFromUrl, tagIdsFromUrl, dispatch]);
 
    // Debounced search effect - automatically search as user types
   useEffect(() => {
@@ -54,7 +56,7 @@ export const SearchListingPage: React.FC = () => {
 
     // Cleanup: cancel timeout if user types again before delay finishes
        return () => clearTimeout(timeoutId);
-  }, [query, selectedTagIds]); // Run when query or selectedTagIds change
+  }, [query, selectedTagIds, qFromUrl, tagIdsFromUrl, setSearchParams]); // Run when query or selectedTagIds change
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
