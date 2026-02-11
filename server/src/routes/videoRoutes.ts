@@ -4,10 +4,12 @@ import { requireAuth } from '../middleware/authMiddleware';
 
 const router = express.Router();
 
-router.get('/', requireAuth, videoController.getAllVideos);
-router.get('/search', requireAuth, videoController.searchVideos);
-router.get('/:id', requireAuth, videoController.getVideoById);
+// Public routes - no auth required
+router.get('/', videoController.getAllVideos);
+router.get('/search', videoController.searchVideos);
 
+// Protected routes - auth required
 router.get('/stream/:id', requireAuth, videoController.streamVideo);
+router.get('/:id', requireAuth, videoController.getVideoById);
 
 export default router;  

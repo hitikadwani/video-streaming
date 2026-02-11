@@ -4,6 +4,7 @@ import { requireAuth } from '../middleware/authMiddleware';
 
 const router = express.Router();
 
-router.get('/', requireAuth, videoController.getAllTags);
+// Public route - no auth required (needed for search page filters)
+router.get('/', videoController.getAllTags);
 
 export default router;  
