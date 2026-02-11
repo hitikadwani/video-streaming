@@ -3,8 +3,7 @@ dotenv.config();
 
 import express, { Request, Response, NextFunction} from 'express';
 import session from 'express-session';
-// @ts-ignore
-import pgSession from 'express-pg-session';
+import connectPgSimple from 'connect-pg-simple';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
@@ -19,7 +18,7 @@ import tagRoutes from './routes/tagRoutes';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const PgSession = pgSession(session);
+const PgSession = connectPgSimple(session);
 
 app.use(cors({
     origin: process.env.CLIENT_URL,

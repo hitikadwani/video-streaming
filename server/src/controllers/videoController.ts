@@ -79,14 +79,22 @@ export async function streamVideo(req: Request, res: Response): Promise<void> {
             return;
         }
 
-        const manifestPath = path.join(__dirname, '../../../public', video.manifest_url);
+        const manifestUrl = video.manifest_url;
+
+        // External HLS URL (e.g. Unified Streaming, CDN) – redirect to it
+        if (manifestUrl.startsWith('http://') || manifestUrl.startsWith('https://')) {
+            res.redirect(302, manifestUrl);
+            return;
+        }
+
+        // Local file – serve from disk
+        const manifestPath = path.join(__dirname, '../../../public', manifestUrl);
 
         if(!fs.existsSync(manifestPath)) {
             res.status(404).json({error: 'Video manifest not found'});
             return;
         }
         res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
-
         res.sendFile(manifestPath);
     } catch(error) {
         console.error('Error streaming video:', error);

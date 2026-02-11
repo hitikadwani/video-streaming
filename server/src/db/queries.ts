@@ -69,12 +69,18 @@ export const videoQueries = {
     },
    
     async search(query: string, limit: number = 20, offset: number = 0): Promise<Video[]> {
+        const pattern = `%${query}%`;
         const result = await pool.query<Video>(
-          `SELECT * FROM videos 
-           WHERE title ILIKE $1 
-           ORDER BY created_at DESC 
+          `SELECT DISTINCT v.* FROM videos v
+           LEFT JOIN video_tags vt ON v.id = vt.video_id
+           LEFT JOIN tags t ON vt.tag_id = t.id
+           WHERE v.title ILIKE $1 
+              OR v.description ILIKE $1 
+              OR t.name ILIKE $1 
+              OR t.slug ILIKE $1
+           ORDER BY v.created_at DESC
            LIMIT $2 OFFSET $3`,
-          [`%${query}%`, limit, offset]
+          [pattern, limit, offset]
         );
         return result.rows;
     },
@@ -92,13 +98,16 @@ export const videoQueries = {
     },
 
     async searchAndFilter(query: string, tagIds: number[], limit: number = 20, offset: number = 0): Promise<Video[]> {
+        const pattern = `%${query}%`;
         const result = await pool.query<Video>(
           `SELECT DISTINCT v.* FROM videos v
            INNER JOIN video_tags vt ON v.id = vt.video_id
-           WHERE v.title ILIKE $1 AND vt.tag_id = ANY($2)
+           LEFT JOIN tags t ON vt.tag_id = t.id
+           WHERE vt.tag_id = ANY($1)
+             AND (v.title ILIKE $2 OR v.description ILIKE $2 OR t.name ILIKE $2 OR t.slug ILIKE $2)
            ORDER BY v.created_at DESC
            LIMIT $3 OFFSET $4`,
-          [`%${query}%`, tagIds, limit, offset]
+          [tagIds, pattern, limit, offset]
         );
         return result.rows;
     },

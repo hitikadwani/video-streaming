@@ -11,6 +11,7 @@
     "fetch-videos": "tsx scripts/fetchVideosFromPexels.ts",
     "convert-hls": "tsx scripts/convertToHLS.ts",
     "seed-db": "tsx scripts/seedDatabase.ts",
+    "add-external-video": "tsx scripts/addExternalVideo.ts",
     "setup": "npm run migrate && npm run fetch-videos && npm run convert-hls && npm run seed-db"
   },
   "keywords": [
@@ -27,17 +28,18 @@
   "dependencies": {
     "axios": "^1.13.5",
     "bcrypt": "^6.0.0",
+    "connect-pg-simple": "^10.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
-    "express-pg-session": "^1.1.0",
     "express-session": "^1.19.0",
     "express-validator": "^7.3.1",
     "pg": "^8.18.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
+    "@types/connect-pg-simple": "^7.0.3",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
