@@ -191,7 +191,15 @@ export async function googleCallback(req: Request, res: Response): Promise<void>
             displayName: user.display_name
         };
 
-        res.redirect(`${process.env.CLIENT_URL}/`);
+        // Save session before redirect to ensure it's persisted
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save error:', err);
+                res.redirect(`${process.env.CLIENT_URL}/login?error=session_error`);
+                return;
+            }
+            res.redirect(`${process.env.CLIENT_URL}/`);
+        });
 
     } catch (error) {
         console.error('Google callback error:', error);
@@ -236,11 +244,18 @@ export function githubAuth(req: Request, res: Response): void {
         displayName: user.display_name
       };
   
-      // Redirect to frontend
-      res.redirect(`${process.env.CLIENT_URL}/`);
+      // Save session before redirect to ensure it's persisted
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          res.redirect(`${process.env.CLIENT_URL}/login?error=session_error`);
+          return;
+        }
+        res.redirect(`${process.env.CLIENT_URL}/`);
+      });
   
     } catch (error) {
       console.error('GitHub OAuth error:', error);
       res.redirect(`${process.env.CLIENT_URL}/login?error=oauth_failed`);
     }
-}
+  }
